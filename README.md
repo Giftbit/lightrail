@@ -1,5 +1,5 @@
 # lightrail
-This document is your guide on how to care for Lightrail after all the elves have moved on to the Undying Lands.
+This document is your guide on how to care for Lightrail after all the elves have sailed to the Undying Lands.
 
 ## The 50 Foot View
 
@@ -23,6 +23,40 @@ If the RDS instance is overtaxed the RDS instance Monitoring tab provides detail
 
 ## Revoking a Customer's Access
 
-## Deploying a Code Change
+I'm going to write a script that does this.
+
+## Deploying a Backend Change
+
+The backend is built on several microservices.  Primarily they are [Rothschild](https://github.com/Giftbit/internal-rothschild), [Edhi](https://github.com/Giftbit/internal-edhi), [KVS](https://github.com/Giftbit/internal-kvs) and [Gutenberg](https://github.com/Giftbit/internal-gutenberg/).  Each of these services is deployed by CodePipeline.  This includes both code and infrastructure (via CloudFormation).  The staging account is deployed from the staging branch and the production account is deployed from the `master` branch.
+
+The development flow is:
+- develop locally against unit tests
+- deploy to dev with `./dev deploy` as necessary
+- open a GitHub PR to the staging branch
+- someone else approves the PR
+- merge the PR which automatically starts the staging CodePipeline
+- approve the CodePipeline in the staging account and watch for it to complete
+- approve and merge the GitHub PR to master which automatically starts the production CodePipeline
+- approve the CodePipeline in the production account and watch for it to complete
+
+If you PR directly to master you can shortcut some steps above but I really don't recommend it.  Don't be a cowboy.
+
+Unifying infrastructure not in one of the above projects is defined in [lightrail-cloudformation-infrastructure](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/).  This includes IAM, CloudFront, S3 buckets, KMS and CodePipelines.  Unlike the above projects that have a CodePipeline in each environment, lightrail-cloudformation-infrastructure has a single CodePipeline called LightrailInfrastructureCI that live in production.  This CodePipeline has stages and permissions to deploy across environments.
+
+The only infrastructure not managed by one of the above is infrastructure that has to live in the us-east-1 region: domain names, certificates, Lambda@Edge and WAF WebACL.  *I strongly recommend you manage all changes through CloudFormation templates deployed by CodePipeline to keep the system consistent.*  That is unless you're closing the account.  Then you can go nuts.
+
+## Deploying a Webapp Change
+
+See [lightrail-webapp](https://github.com/Giftbit/lightrail-webapp/)
+
+## Updating the Static Site
+
+See [lightrail-static](https://github.com/Giftbit/lightrail-static)
 
 ## Shutting it all Down
+1. Take down the website by deleting the CloudFront distributions.
+2. Backup all production data you may need to refer to later.
+  a. Connect to the RDS instance through the bastion host as outlined in the [Rothschild](https://github.com/Giftbit/internal-rothschild) readme.  Connect to the database with MySQL Workbench and use the [data export wizard](https://dev.mysql.com/doc/workbench/en/wb-admin-export-import-management.html) to export all the data.  This data contains personally identifying information so store it somewhere secure.
+  b. Scan all data in the Edhi DynamoDB table.  I'll probably write a script for that.  This data contains personally identifying information so store it somewhere secure.
+3. [Transfer the domains](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/domain-transfer-to-route-53.html) out of the account.  `lightrail.com` at least is worth a little bit of money.
+4. Initiate [close account](https://aws.amazon.com/premiumsupport/knowledge-center/close-aws-account/) on all 3 accounts (dev, staging, production).
