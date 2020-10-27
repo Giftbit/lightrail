@@ -64,7 +64,7 @@ See [lightrail-static](https://github.com/Giftbit/lightrail-static)
 ## Shutting it all Down
 1. Take down the website by deleting the CloudFront distributions.
 2. Backup all production data you may need to refer to later.
-    a. Connect to the RDS instance through the bastion host as outlined in the [Rothschild](https://github.com/Giftbit/internal-rothschild) readme.  Connect to the database with MySQL Workbench and use the [data export wizard](https://dev.mysql.com/doc/workbench/en/wb-admin-export-import-management.html) to export all the data.  This data contains personally identifying information so store it somewhere secure.
-    b. Scan all data in the Edhi DynamoDB table.  I'll probably write a script for that.  This data contains personally identifying information so store it somewhere secure.
+    1. Connect to the RDS instance through the bastion host as outlined in the [Rothschild](https://github.com/Giftbit/internal-rothschild) readme.  Connect to the database with MySQL Workbench and use the [data export wizard](https://dev.mysql.com/doc/workbench/en/wb-admin-export-import-management.html) to export all the data.  This data contains personally identifying information so store it somewhere secure.
+    2. Scan all data in the Edhi DynamoDB table.  I'll probably write a script for that.  This data contains personally identifying information so store it somewhere secure.
 3. [Transfer the domains](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/domain-transfer-to-route-53.html) out of the account.  `lightrail.com` at least is worth a little bit of money.
 4. Initiate [close account](https://aws.amazon.com/premiumsupport/knowledge-center/close-aws-account/) on all 3 accounts (dev, staging, production).
