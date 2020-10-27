@@ -3,6 +3,8 @@ This document is your guide on how to care for Lightrail after all the elves hav
 
 ## The 50 Foot View
 
+I'm going to cover a bit of architecture and common concepts.
+
 ## Monitoring for Trouble
 
 Developers are notified of emergencies through [PagerDuty](https://giftbit.pagerduty.com).  The only alarms configured are 5xx spikes and latency spikes.
