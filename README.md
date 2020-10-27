@@ -9,6 +9,8 @@ The primary microservices are [Rothschild](https://github.com/Giftbit/internal-r
 
 Philisophically the microservices could each have been implemented in different ways, but in practice they ended up the same for simplicity.  Each is deployed by a CodePipeline created by [lightrail-cloudformation-infrastructure](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/blob/master/modules/rothschild.yaml#L122) that points to a specific commit of [infrastructure/ci.yaml](https://github.com/Giftbit/internal-rothschild/blob/staging/infrastructure/ci.yaml).  The CodePipeline deploys [infrastrcutrue/sam.yaml](https://github.com/Giftbit/internal-rothschild/blob/staging/infrastructure/sam.yaml) which includes resources like databases, and one or more Lambdas.  The Lamba source code is in [src/lambdas](https://github.com/Giftbit/internal-rothschild/tree/staging/src/lambdas).  REST Lambdas handle multiple HTTP request paths, routing them with [Cassava](https://github.com/Giftbit/cassava).
 
+Authentication is done with JWTs signed with a secret stored in the lightrailsecureconfig S3 bucket.  All JWTs with valid signatures are 100% trusted with no extra steps such as checking that the userId exists.  The exception ia API keys blocklisted by the WAF WebACL.
+
 ## Monitoring for Trouble
 
 Developers are notified of emergencies through [PagerDuty](https://giftbit.pagerduty.com).  The only alarms configured are 5xx spikes and latency spikes.
