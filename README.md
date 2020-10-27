@@ -11,6 +11,8 @@ Philisophically the microservices could each have been implemented in different 
 
 Authentication is done with JWTs signed with a secret stored in the lightrailsecureconfig S3 bucket.  All JWTs with valid signatures are 100% trusted with no extra steps such as checking that the userId exists.  The exception ia API keys blocklisted by the WAF WebACL.
 
+The system is deployed in three accounts: dev, staging and production.  Dev is for development and may have changes being actively developed.  Staging is for a dry run of deployment and ironing out any issues before going live.  Production is where the money ~is~ was earned.  Being a serverless architecture the dev and staging accounts are fairly cheap to maintain and I would keep those turned on as long as production is on just in case.
+
 ## Monitoring for Trouble
 
 Developers are notified of emergencies through [PagerDuty](https://giftbit.pagerduty.com).  The only alarms configured are 5xx spikes and latency spikes.
