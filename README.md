@@ -38,7 +38,7 @@ I'm going to write a script that does this.
 The backend is built on several microservices.  Primarily they are [Rothschild](https://github.com/Giftbit/internal-rothschild), [Edhi](https://github.com/Giftbit/internal-edhi), [KVS](https://github.com/Giftbit/internal-kvs) and [Gutenberg](https://github.com/Giftbit/internal-gutenberg/).  Each of these services is deployed by CodePipeline.  This includes both code and infrastructure (via CloudFormation).  The staging account is deployed from the staging branch and the production account is deployed from the `master` branch.
 
 The development flow is:
-- develop locally against unit tests
+- develop locally against unit tests (`npm run test`)
 - deploy to dev with `./dev deploy` as necessary
 - open a GitHub PR to the staging branch
 - someone else approves the PR
