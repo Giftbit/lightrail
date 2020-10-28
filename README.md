@@ -45,7 +45,7 @@ The development flow is:
 - open a GitHub PR to the staging branch
 - someone else approves the PR
 - merge the PR which automatically starts the staging CodePipeline
-- approve the CodePipeline changes in the staging account and watch for it to complete
+- approve the CodePipeline changes in the staging account and watch for it to complete which automatically creates a PR from staging to master
 - approve and merge the GitHub PR to master which automatically starts the production CodePipeline
 - approve the CodePipeline changes in the production account and watch for it to complete
 
