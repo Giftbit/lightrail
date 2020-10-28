@@ -51,9 +51,9 @@ The development flow is:
 
 If you PR directly to master you can shortcut some steps above but I really don't recommend it.  Don't be a cowboy.
 
-Unifying infrastructure not in one of the above projects is defined in [lightrail-cloudformation-infrastructure](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/).  This includes IAM, CloudFront, S3 buckets, KMS and CodePipelines.  Unlike the above projects that have a CodePipeline in each environment, lightrail-cloudformation-infrastructure has a single CodePipeline called LightrailInfrastructureCI that live in production.  This CodePipeline has stages and permissions to deploy across environments.
+Unifying infrastructure not in one of the above projects is defined in [lightrail-cloudformation-infrastructure](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/).  This includes IAM, CloudFront, S3 buckets, KMS and CodePipelines.  Unlike the above projects that have a CodePipeline in each environment, lightrail-cloudformation-infrastructure has a single CodePipeline called LightrailInfrastructureCI that lives in production.  This CodePipeline has stages and permissions to deploy across AWS accounts.
 
-The only infrastructure not managed by one of the above is infrastructure that has to live in the us-east-1 region: domain names, certificates, Lambda@Edge and WAF WebACL.  *I strongly recommend you manage all changes through CloudFormation templates deployed by CodePipeline to keep the system consistent.*  That is unless you're closing the account.  Then you can go nuts.
+The only infrastructure not managed by any of the above is infrastructure that has to live in the us-east-1 region: domain names, certificates, Lambda@Edge and WAF WebACL.  *I strongly recommend you manage all changes possible through CloudFormation templates deployed by CodePipeline to keep the system consistent.*  That is unless you're closing the account.  Then you can go wreck house.
 
 ## Deploying a Webapp Change
 
