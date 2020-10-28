@@ -46,7 +46,7 @@ If the RDS instance is overtaxed the RDS instance Monitoring tab provides detail
 
 ## Revoking a Customer's Access
 
-I'm going to write a script that does this.
+[Edhi](https://github.com/Giftbit/internal-edhi) has scripts documented in the README to make this easy.
 
 ## Deploying a Backend Change
 
