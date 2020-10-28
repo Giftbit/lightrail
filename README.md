@@ -22,7 +22,7 @@ Most of the things you'll want to do must be done through existing scripts.  To 
 The way we managed having access keys to multiple AWS accounts is
 - symlink the AWS config dir to where a USB drive called `credentials` would be mounted (eg: `ln -s /Volumes/credentials/config ~/.aws/config` on MacOS)
 - buy a USB thumb drive for each account
-- encrypt each tumb drive with a *strong password* and label it `credentials`
+- encrypt each tumb drive with a _strong password_ and label it `credentials`
 - for each thumb drive run `aws configure` and set the AWS access keys of the account to associate with that thumb drive
 - during development insert the tumb drive for the AWS account you want to control and it will be mounted
 
