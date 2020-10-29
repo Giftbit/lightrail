@@ -3,7 +3,7 @@ This document is your guide on how to care for Lightrail after all the elves hav
 
 ## The 50 Foot View
 
-Lightrail is a primarily a REST API defined in [lightrail-cloudformation-infrastructure](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/blob/master/modules/cloudfront-api-distribution-template.yaml).  The REST API is implemented by microservices that mostly don't talk to each other, but when they do they do it through the REST API or the [Lightail event topic](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/blob/master/lightrail-stack.yaml#L194).
+Lightrail is a primarily a REST API defined in [lightrail-cloudformation-infrastructure](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/blob/master/modules/cloudfront-api-distribution-template.yaml) and deployed on AWS.  The REST API is implemented by microservices that mostly don't talk to each other, but when they do they do it through the REST API or the [Lightail event topic](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/blob/master/lightrail-stack.yaml#L194).
 
 The primary microservices are [Rothschild](https://github.com/Giftbit/internal-rothschild) covering /v2/currencies, /v2/contacts, /v2/programs, /v2/transactions, /v2/values; [Edhi](https://github.com/Giftbit/internal-edhi) covering /v2/account, /v2/user; [KVS](https://github.com/Giftbit/internal-kvs) covering /v1/storage; and [Gutenberg](https://github.com/Giftbit/internal-gutenberg/) covering /v2/webhooks.  This is all defined in [lightrail-cloudformation-infrastructure's cloudfront-api-distribution-template.yaml](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/blob/master/modules/cloudfront-api-distribution-template.yaml#L102).
 
@@ -64,7 +64,7 @@ The development flow is:
 
 If you PR directly to master you can shortcut some steps above but I really don't recommend it.  Don't be a cowboy.
 
-Unifying infrastructure not in one of the above projects is defined in [lightrail-cloudformation-infrastructure](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/).  This includes IAM, CloudFront, S3 buckets, KMS and CodePipelines.  Unlike the above projects that have a CodePipeline in each environment, lightrail-cloudformation-infrastructure has a single CodePipeline called LightrailInfrastructureCI that lives in production.  This CodePipeline has stages and permissions to deploy across AWS accounts.
+Unifying infrastructure not in one of the above projects is defined in [lightrail-cloudformation-infrastructure](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/).  This includes IAM, CloudFront, S3 buckets, SNS topics, KMS keys and CodePipelines.  Unlike the above projects that have a CodePipeline in each environment, lightrail-cloudformation-infrastructure has a single CodePipeline called LightrailInfrastructureCI that lives in production.  This CodePipeline has stages and permissions to deploy across AWS accounts.
 
 The only infrastructure not managed by any of the above is infrastructure that has to live in the us-east-1 region: domain names, certificates, Lambda@Edge and WAF WebACL.  *I strongly recommend you manage all changes possible through CloudFormation templates deployed by CodePipeline to keep the system consistent.*  That is unless you're closing the account.  Then you can go wreck house.
 
