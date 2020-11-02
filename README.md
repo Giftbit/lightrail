@@ -46,6 +46,10 @@ If the bug is in the code there will be log output for it.  The logs will be sto
 
 If the RDS instance is overtaxed the RDS instance Monitoring tab provides detailed metrics.  Performance Insights is enabled on the production RDS instance for a view into what SQL is problematic.
 
+## Billing
+
+See [internal-billing](https://github.com/Giftbit/internal-billing/).
+
 ## Revoking a Customer's Access
 
 [Edhi](https://github.com/Giftbit/internal-edhi) has scripts documented in the README to make this easy.
@@ -72,11 +76,11 @@ The only infrastructure not managed by any of the above is infrastructure that h
 
 ## Deploying a Webapp Change
 
-See [lightrail-webapp](https://github.com/Giftbit/lightrail-webapp/)
+See [lightrail-webapp](https://github.com/Giftbit/lightrail-webapp/).
 
 ## Updating the Static Site
 
-See [lightrail-static](https://github.com/Giftbit/lightrail-static)
+See [lightrail-static](https://github.com/Giftbit/lightrail-static).
 
 ## Shutting it all Down
 1. Take down the website by deleting the CloudFront distributions.
