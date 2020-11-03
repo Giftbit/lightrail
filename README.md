@@ -3,7 +3,7 @@ This document is your guide on how to care for Lightrail after all the elves hav
 
 ## The 50 Foot View
 
-Lightrail is a primarily a REST API.  There is both [high-level documentation](https://www.lightrail.com/docs/) and an [API reference](https://apidocs.lightrail.com/).  The source for this documentation is in [Lightrail-API-V2-Docs](https://github.com/Giftbit/Lightrail-API-V2-Docs/).
+Lightrail is a primarily a REST API.  That API has both [high-level documentation](https://www.lightrail.com/docs/) and an [API reference](https://apidocs.lightrail.com/).  The source for this documentation is in [Lightrail-API-V2-Docs](https://github.com/Giftbit/Lightrail-API-V2-Docs/).
 
 The implementation is deployed on AWS and is centrally controlled by [lightrail-cloudformation-infrastructure](https://github.com/Giftbit/lightrail-cloudformation-infrastructure).  The REST API is implemented by microservices that mostly don't talk to each other, but when they do they do it through the REST API itself or the [Lightail event topic](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/blob/master/lightrail-stack.yaml#L194).
 
