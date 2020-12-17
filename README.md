@@ -89,3 +89,4 @@ See [lightrail-static](https://github.com/Giftbit/lightrail-static).
     2. Download the entire [Edhi](https://github.com/Giftbit/internal-edhi) database with the script `export`.  This data contains personally identifying information so store it somewhere secure.
 3. [Transfer the domains](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/domain-transfer-to-route-53.html) out of the account.  `lightrail.com` at least is worth a little bit of money.
 4. Initiate [close account](https://aws.amazon.com/premiumsupport/knowledge-center/close-aws-account/) on all 3 accounts (dev, staging, production).
+5. Delete Lightrail monitors in DataDog and PagerDuty.
