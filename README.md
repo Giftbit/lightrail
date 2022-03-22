@@ -1,50 +1,42 @@
 # lightrail
-This document is your guide on how to care for Lightrail after all the elves have sailed to the Undying Lands.
+This document is your guide to Lightrail.
 
 ## The 50 Foot View
 
-Lightrail is a primarily a REST API.  That API has both [high-level documentation](https://www.lightrail.com/docs/) and an [API reference](https://apidocs.lightrail.com/).  The source for this documentation is in [Lightrail-API-V2-Docs](https://github.com/Giftbit/Lightrail-API-V2-Docs/).
+Lightrail is a primarily a REST API.  That API has both [high-level documentation](https://github.com/Giftbit/Lightrail-API-V2-Docs/) and an [API reference](https://github.com/Giftbit/Lightrail-API-V2-Docs/tree/master/openapi3).  There is also a [webapp](https://github.com/Giftbit/lightrail-webapp) that serves as a web console to the API and hosts an interface for the documentation.
 
-The implementation is deployed on AWS and is centrally controlled by [lightrail-cloudformation-infrastructure](https://github.com/Giftbit/lightrail-cloudformation-infrastructure).  The REST API is implemented by microservices that mostly don't talk to each other, but when they do they do it through the REST API itself or the [Lightail event topic](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/blob/master/lightrail-stack.yaml#L194).
+The implementation is deployed on AWS and is centrally controlled by [lightrail-cloudformation-infrastructure](https://github.com/Giftbit/lightrail-cloudformation-infrastructure).  The REST API is implemented by microservices that mostly don't talk to each other, but when they do they do it through the REST API itself or the [Lightail SNS event topic](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/blob/master/lightrail-stack.yaml#L194).
 
-The primary microservices are [Rothschild](https://github.com/Giftbit/internal-rothschild) covering /v2/currencies, /v2/contacts, /v2/programs, /v2/transactions, /v2/values; [Edhi](https://github.com/Giftbit/internal-edhi) covering /v2/account, /v2/user; [KVS](https://github.com/Giftbit/internal-kvs) covering /v1/storage; and [Gutenberg](https://github.com/Giftbit/internal-gutenberg/) covering /v2/webhooks.  This is all defined in [lightrail-cloudformation-infrastructure's cloudfront-api-distribution-template.yaml](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/blob/master/modules/cloudfront-api-distribution-template.yaml#L102).
+The primary microservices are [Rothschild](https://github.com/Giftbit/lightrail-rothschild) covering /v2/currencies, /v2/contacts, /v2/programs, /v2/transactions, /v2/values; [Edhi](https://github.com/Giftbit/lightrail-edhi) covering /v2/account, /v2/user; [KVS](https://github.com/Giftbit/lightrail-kvs) covering /v1/storage; and [Gutenberg](https://github.com/Giftbit/lightrail-gutenberg/) covering /v2/webhooks.  This is all defined in [lightrail-cloudformation-infrastructure's cloudfront-api-distribution-template.yaml](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/blob/master/modules/cloudfront-api-distribution-template.yaml#L102).
 
-Philisophically the microservices could each have been implemented in different ways, but in practice they ended up the same for simplicity.  Each microservice (links are to Rothschild as an example) is deployed by a CodePipeline created by [lightrail-cloudformation-infrastructure](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/blob/master/modules/rothschild.yaml#L122) that points to a specific commit of [infrastructure/ci.yaml](https://github.com/Giftbit/internal-rothschild/blob/staging/infrastructure/ci.yaml).  The CodePipeline deploys [infrastrcutrue/sam.yaml](https://github.com/Giftbit/internal-rothschild/blob/staging/infrastructure/sam.yaml) which includes resources like databases, and one or more Lambdas.  The Lamba source code is in [src/lambdas/](https://github.com/Giftbit/internal-rothschild/tree/staging/src/lambdas).  REST Lambdas handle multiple HTTP request paths, routing them with [Cassava](https://github.com/Giftbit/cassava).  Other Lambdas may be triggered on a schedule, by an SQS queue or an SNS topic.
+Philisophically the microservices could each have been implemented in different ways, but in practice they ended up the same for simplicity.  Each microservice (links are to Rothschild as an example) is deployed by a CodePipeline created by [lightrail-cloudformation-infrastructure](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/blob/master/modules/rothschild.yaml#L122) that points to a specific commit of [infrastructure/ci.yaml](https://github.com/Giftbit/lightrail-rothschild/blob/staging/infrastructure/ci.yaml).  The CodePipeline deploys [infrastrcutrue/sam.yaml](https://github.com/Giftbit/lightrail-rothschild/blob/staging/infrastructure/sam.yaml) which includes resources like databases, and one or more Lambdas.  The Lamba source code is in [src/lambdas/](https://github.com/Giftbit/lightrail-rothschild/tree/staging/src/lambdas).  REST Lambdas handle multiple HTTP request paths, routing them with [Cassava](https://github.com/Giftbit/cassava).  Other Lambdas may be triggered on a schedule, by an SQS queue or an SNS topic.
 
 Authentication is done with JWTs signed with a secret stored in the lightrailsecureconfig S3 bucket.  All JWTs with valid signatures are 100% trusted with no extra steps such as checking that the userId exists.  The exception is API keys blocklisted by the WAF WebACL.
 
-The system is deployed in three accounts: dev, staging and production.  Dev is for development and may have changes being actively developed.  Staging is for a dry run of deployment and ironing out any issues before going live.  Production is where the money ~is~ was earned.  Being a serverless architecture the dev and staging accounts are fairly cheap to maintain and I would keep those turned on as long as production is on just in case.
+The system is set up to be deployed in three accounts: dev, staging and production.  Dev and staging are optional.  Dev is for development and may have changes being actively developed.  Staging is for a dry run of deployment and ironing out any issues before going live.  Production is production.
 
-## Getting Access
+## Deploying
 
-Add users to [lightrail-cloudformation-infrastructure's groups.yaml](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/blob/master/modules/groups.yaml) and then [deploy](#deploying-a-backend-change) that.
+- fork all of the Lightrail repos
+- for each AWS accounts (dev, staging, production) buy the domain that will host Lightrail in Route53
+- create a GitHub account with CI access to your repos
+- deploy the [lightrail-cloudformation-infrastructure](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/) and follow the instructions therein
+- for each of the services (rothscild, edhi, kvs, gutenberg, turnkey):
+  - set the `TemplateURL` for the corresponding lightrail-cloudformation-infrastructure module
+  - run the lightrail-cloudformation-infrastructure CodePipeline
+  - run the service CodePipeline
+  - set the `RoleNames` and `SentryDsn` in the corresponding lightrail-cloudformation-infrastructure module
+  - run the lightrail-cloudformation-infrastructure CodePipeline again
 
-Most of the things you'll want to do must be done through existing scripts.  To run those you'll need the aws-cli installed with [access keys](https://console.aws.amazon.com/iam/home?region=us-west-2#/security_credentials) configured.
+## Credentials
 
-The way we managed having access keys to multiple AWS accounts is
-- symlink the AWS config dir to where a USB drive called `credentials` would be mounted (eg: `ln -s /Volumes/credentials/config ~/.aws/config` on MacOS)
-- buy a USB thumb drive for each account
-- encrypt each tumb drive with a *strong password* and label it `credentials`
-- for each thumb drive run `aws configure` and set the AWS access keys of the account to associate with that thumb drive
-- during development insert the tumb drive for the AWS account you want to control and it will be mounted
+Users are defined in [lightrail-cloudformation-infrastructure's groups.yaml](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/blob/master/modules/groups.yaml).
 
-## Monitoring for Trouble
+Manual administration is done with the [InfrastructureAdmin role](https://github.com/Giftbit/lightrail-cloudformation-infrastructure/blob/main/modules/user-assumable-roles.yaml).
 
-Developers are notified of emergencies through [PagerDuty](https://giftbit.pagerduty.com).  The only alarms configured are 5xx spikes and latency spikes.
+## Monitoring
 
-Developers are notified of system errors through [Sentry](https://sentry.io/organizations/giftbit/issues/).  The `react-frontend` project can be a bit noisy but the backend projects rarely throw errors.
-
-For a picture of general system health see the DataDog dashboards.  [Lightrail Left](https://app.datadoghq.com/dashboard/qe9-ueb-qh3/lightrail-left) is focused on business metrics and [Lightrail Right](https://app.datadoghq.com/dashboard/w4b-e9j-3wy/lightrail-right) is focused on technical metrics.
-
-## Troubleshooting an Outage
-
-Step one is determining where the problem is.  The Datadog dashboard [Lightrail Error Responses](https://app.datadoghq.com/dashboard/mbb-7vd-zjb/lightrail-error-responses) is useful here.  You can also look in Sentry.
-
-Occasionally ApiGateway or Lambda has a mini-outage.  This will look like 5xx errors in ApiGateway and the Lambda fails to invoke.  These errors fix themselves.
-
-If the bug is in the code there will be log output for it.  The logs will be stored in CloudWatch under the group name `/aws/lambda/<env>-<service>-<function>-<rand>` where `<env>` is the environment name (production), `<service>` is the service name (eg: Rothschild), `<function>` is the name of a Lambda function in the service (eg: RestFunction) and `<rand>` is some random characters set when the service was first deployed.  Search the log group for a string like `"status=500"`.
-
-If the RDS instance is overtaxed the RDS instance Monitoring tab provides detailed metrics.  Performance Insights is enabled on the production RDS instance for a view into what SQL is problematic.
+Lightrail has configuration points for [Sentry](https://sentry.io/) and [Datadog](https://www.datadoghq.com/).
 
 ## Billing
 
@@ -87,6 +79,6 @@ See [lightrail-static](https://github.com/Giftbit/lightrail-static).
 2. Backup all production data you may need to refer to later.
     1. Connect to the RDS instance through the bastion host as outlined in the [Rothschild](https://github.com/Giftbit/internal-rothschild) readme.  Connect to the database with MySQL Workbench and use the [data export wizard](https://dev.mysql.com/doc/workbench/en/wb-admin-export-import-management.html) to export all the data.  This data contains personally identifying information so store it somewhere secure.
     2. Download the entire [Edhi](https://github.com/Giftbit/internal-edhi) database with the script `export`.  This data contains personally identifying information so store it somewhere secure.
-3. [Transfer the domains](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/domain-transfer-to-route-53.html) out of the account.  `lightrail.com` at least is worth a little bit of money.
+3. [Transfer the domains](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/domain-transfer-to-route-53.html) out of the account.
 4. Initiate [close account](https://aws.amazon.com/premiumsupport/knowledge-center/close-aws-account/) on all 3 accounts (dev, staging, production).
 5. Delete Lightrail monitors in DataDog and PagerDuty.
