@@ -38,10 +38,6 @@ Manual administration is done with the [InfrastructureAdmin role](https://github
 
 Lightrail has configuration points for [Sentry](https://sentry.io/) and [Datadog](https://www.datadoghq.com/).
 
-## Billing
-
-See [internal-billing](https://github.com/Giftbit/internal-billing/).
-
 ## Revoking a Customer's Access
 
 [Edhi](https://github.com/Giftbit/internal-edhi) has scripts documented in the README to make this easy.
